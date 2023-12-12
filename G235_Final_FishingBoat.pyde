@@ -29,7 +29,7 @@ mahiMahiSprite = None
 TUNA = 0
 COD = 1
 MAHI_MAHI = 2
-STURGEON = 3
+#STURGEON = 3
 
 #-----------------------------------------------------------------------------------------------------
 def setup():
@@ -45,7 +45,6 @@ def setup():
     tunaSprite = loadImage("Sprites/Tuna.png")
     codSprite = loadImage("Sprites/Cod.png")
     mahiMahiSprite = loadImage("Sprites/MahiMahi.png")
-    
     
 #-----------------------------------------------------------------------------------------------------
 def draw():
@@ -80,13 +79,13 @@ def runGame():
     if not rodLowering:  # this is to restrict boat from moving while rod is lowering, not sure if this is the most effiecient way
         moveBoat()
         
-    # TEMP DELETE LATER / TESTING !!! ------- HAVE TO RENDER FISH LAST OR ELSE THINGS WILL FLICKER ? maybe i can ask Zac abt it
+    # HAVE TO RENDER FISH LAST OR ELSE THINGS WILL FLICKER?? idk maybe i can ask Zac abt it on Thursday
     timeToAddFish()
     drawFish()
     # DEBUG TEXT ----------------------------
-    fill(255)
-    textAlign(LEFT)
-    text("Number of Fish: " + str(len(fishList)), 20, 40)
+    #fill(255)
+    #textAlign(LEFT)
+    #text("Number of Fish: " + str(len(fishList)), 20, 40)
     # ---------------------------------------
 #-----------------------------------------------------------------------------------------------------
 def drawSea():
@@ -134,7 +133,7 @@ def addFish(fishCount):
 def timeToAddFish(): # sorry the name is a bit stupid, needs a timer for adding more fish into the scene
     global fishTime
     fishTime += deltaTime
-    if fishTime >= timeUntilFish: # 3 seconds has passed, add another fish
+    if fishTime >= timeUntilFish: # 0.5 seconds has passed, add another fish
         addFish(int(random(1, 3))) # Add between 1-2 fish every 0.5 seconds
         fishTime = 0 # reset timer
 
@@ -200,13 +199,19 @@ class Fish(object):
         self.isCaught = False # flag for being caught
         
     def update(self):
-        # MINOR BUG: selfDeletion() running causes some fish sprites to flicker
+        # MINOR BUG: selfDeletion() running causes some fish sprites to flicker ? 
         self.selfDeletion()
+        
         if not self.isCaught:
             self.pos.x += self.velocity
-        else:
-            pass
-            # TODO: MOVE THE FISH UP WITH ROD
+            self.collide()
+        else: 
+            self.pos.y -= 1 # fish moves up with the rod, could be a variable so we can adjust the rod speed
+            
+    def collide(self):
+        if self.pos.x <= boatX and (self.pos.x + FISH_SPRITE_SIZE.x) >= boatX:
+            if self.pos.y <= (boatY + rodLength) and (self.pos.y + FISH_SPRITE_SIZE.y) >= (rodLength + boatY):
+                self.isCaught = True
         
     def render(self):
         if self.scal > 0: # facing right
@@ -223,4 +228,8 @@ class Fish(object):
         if self.pos.x > width + 300 and self in fishList: # moving right
             fishList.remove(self)
         elif self.pos.x < -300 and self in fishList: # moving left
+            fishList.remove(self)
+            
+        if (self.pos.y + FISH_SPRITE_SIZE.y / 2) <= boatY and self.isCaught and self in fishList: 
+            # TODO: INCREASE FISH CAUGHT COUNTER  !
             fishList.remove(self)
