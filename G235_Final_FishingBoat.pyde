@@ -26,6 +26,10 @@ tunaSprite = None
 codSprite = None
 mahiMahiSprite = None
 
+tunaSpriteLeft = None
+codSpriteLeft = None
+mahiMahiSpriteLeft = None
+
 TUNA = 0
 COD = 1
 MAHI_MAHI = 2
@@ -46,6 +50,7 @@ def setup():
     tunaSprite = loadImage("Sprites/Tuna.png")
     codSprite = loadImage("Sprites/Cod.png")
     mahiMahiSprite = loadImage("Sprites/MahiMahi.png")
+    
     
 #-----------------------------------------------------------------------------------------------------
 def draw():
@@ -83,8 +88,10 @@ def runGame():
     # TEMP DELETE LATER / TESTING !!! ------- HAVE TO RENDER FISH LAST OR ELSE THINGS WILL FLICKER ? maybe i can ask Zac abt it
     timeToAddFish()
     drawFish()
+    # DEBUG TEXT ----------------------------
     fill(255)
-    text(str(len(fishList)), 100, 100)
+    textAlign(LEFT)
+    text("Number of Fish: " + str(len(fishList)), 20, 40)
     # ---------------------------------------
 #-----------------------------------------------------------------------------------------------------
 def drawSea():
@@ -133,14 +140,15 @@ def timeToAddFish(): # sorry the name is a bit stupid, needs a timer for adding 
     global fishTime
     fishTime += deltaTime
     if fishTime >= timeUntilFish: # 3 seconds has passed, add another fish
-        addFish(int(random(1,3))) # Add between 1-2 fish every 3 seconds
+        addFish(int(random(1, 3))) # Add between 1-2 fish every 0.5 seconds
         fishTime = 0 # reset timer
 
 # Draw Fish - Kai -----------------------------
 def drawFish():
     for fish in fishList:
-        fish.update()
         fish.render()
+        fish.update()
+        
 #-----------------------------------------------------------------------------------------------------
 def keyPressed():
     global boatVelocity, rodLowering, gameState, runningTime
@@ -194,22 +202,33 @@ class Fish(object):
         self.velocity = tempVelocity
         self.sprite = tempSprite
         self.type = tempType
+        self.isCaught = False # flag for being caught
         
-        self.isCaught = False
+        
         
     def update(self):
-        #self.selfDeletion()
-        self.pos.x += self.velocity
+        # MINOR BUG: selfDeletion() running causes some fish sprites to flicker
+        self.selfDeletion()
+        if not self.isCaught:
+            self.pos.x += self.velocity
+        else:
+            pass
+            # TODO: MOVE THE FISH UP WITH ROD
         
     def render(self):
-        scale(self.scal) # INEFFICIENT 
-        image(self.sprite, self.pos.x, self.pos.y)
+        if self.scal > 0: # facing right
+            image(self.sprite, self.pos.x, self.pos.y)
+        else:
+            # Credit to https://discourse.processing.org/t/solved-question-about-flipping-images/7391
+            pushMatrix()
+            translate(self.pos.x + FISH_SPRITE_SIZE.x, self.pos.y)
+            scale(self.scal, 1)
+            image(self.sprite, 0, 0)
+            popMatrix()
+            
         
-    # def selfDeletion(self):
-    #     if self in fishList:
-    #         if self.velocity > 0: # moving right
-    #             if self.pos.x > = width:
-    #                 fishList.remove(self)
-    #         else: # moving left
-    #             if self.pos.x + FISH_SPRITE_SIZE.x < = 0:
-    #                 fishList.remove(self)
+    def selfDeletion(self):
+        if self.pos.x > width + 300 and self in fishList: # moving right
+            fishList.remove(self)
+        elif self.pos.x < -300 and self in fishList: # moving left
+            fishList.remove(self)
