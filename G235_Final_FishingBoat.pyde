@@ -26,15 +26,10 @@ tunaSprite = None
 codSprite = None
 mahiMahiSprite = None
 
-tunaSpriteLeft = None
-codSpriteLeft = None
-mahiMahiSpriteLeft = None
-
 TUNA = 0
 COD = 1
 MAHI_MAHI = 2
 STURGEON = 3
-
 
 #-----------------------------------------------------------------------------------------------------
 def setup():
@@ -204,8 +199,6 @@ class Fish(object):
         self.type = tempType
         self.isCaught = False # flag for being caught
         
-        
-        
     def update(self):
         # MINOR BUG: selfDeletion() running causes some fish sprites to flicker
         self.selfDeletion()
@@ -225,7 +218,6 @@ class Fish(object):
             scale(self.scal, 1)
             image(self.sprite, 0, 0)
             popMatrix()
-            
         
     def selfDeletion(self):
         if self.pos.x > width + 300 and self in fishList: # moving right
