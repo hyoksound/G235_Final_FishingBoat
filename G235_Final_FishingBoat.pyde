@@ -15,13 +15,24 @@ currentFrameTime = 0
 lastFrameTime = 0
 runningTime = 121000 # time left for player, + 1 second for the sake of seeing 120 seconds countdown, in milliseconds 
 
+# Fish Stuff -----------------------------------------------------------------------------------------
+fishList = []
+fishType = 0
+
+TUNA = 0
+COD = 1
+MAHI_MAHI = 2
+STURGEON = 3
+
+
 #-----------------------------------------------------------------------------------------------------
 def setup():
-    global boatX, boatY, seaLevelY
+    global boatX, boatY, seaLevelY, tunaSprite
     size(640, 480)
     boatX = width / 2
     seaLevelY = height * 30 / 100  # Adjusting sea level to 70%
     boatY = seaLevelY - boatHeight / 2
+    
 #-----------------------------------------------------------------------------------------------------
 def draw():
     if gameState == "TITLE":
@@ -112,3 +123,12 @@ def getLastFrameTime():
     lastFrameTime = millis() - currentFrameTime
     currentFrameTime = millis()
     return lastFrameTime
+
+# FISH CLASS -----------------------------------------------------------------------------------------
+class Fish(object):
+    def __init__(self, tempPos, tempDirection, tempVelocity, tempSprite, tempType):
+        self.pos = tempPos
+        self.direction = tempDirection
+        self.velocity = tempVelocity
+        self.sprite = tempSprite
+        self.type = tempType
