@@ -81,8 +81,8 @@ def runGame():
     drawRod()
     if not rodLowering:
         moveBoat()
-    # HAVE TO RENDER FISH LAST OR ELSE THINGS WILL FLICKER?? idk maybe i can ask Zac abt it on Thursday
-    timeToAddFish()
+    # fish are flickering - idk maybe i can ask Zac abt it on Thursday
+    timeToAddFish() # Starts fish timer which will then call addFish() once specified amount of time has passed
     drawFish()
     # DEBUG TEXT ----------------------------
     #fill(255)
@@ -146,6 +146,7 @@ def timeToAddFish():
     if fishTime >= timeUntilFish:
         addFish(int(random(1, 3)))
         fishTime = 0
+        
 # Draw Fish - Kai -----------------------------
 def drawFish():
     for fish in fishList:
@@ -188,7 +189,7 @@ def drawRod():
     line(boatX, boatY, boatX, boatY + rodLength)
     
 #-----------------------------------------------------------------------------------------------------
-# SECONDS COUNTER UI ---------------------------------------------------------------------------------
+# UI -------------------------------------------------------------------------------------------------
 
 def drawRemainingTime():
     global runningTime, gameState 
@@ -198,10 +199,8 @@ def drawRemainingTime():
     if runningTime <= 0:
         gameState = "GAMEOVER"
         return
-    text("Seconds Remaining: " + nf(runningTime / 1000, 3), width - 15, 40) # Will format this better, but it does work
+    text("Seconds Remaining: " + nf(runningTime / 1000, 2), width - 15, 40) # Will format this better, but it does work
     
-    # if runningTime/1000 <= 0:
-    #     gameState = "GAMEOVER" 
 
 def drawFishCount():
     textAlign(LEFT)
@@ -214,6 +213,7 @@ def getLastFrameTime():
     lastFrameTime = millis() - currentFrameTime
     currentFrameTime = millis()
     return lastFrameTime
+
 # FISH CLASS -----------------------------------------------------------------------------------------
 class Fish(object):
     def __init__(self, tempPos, tempScale, tempVelocity, tempSprite, tempType):
@@ -222,10 +222,10 @@ class Fish(object):
         self.velocity = tempVelocity
         self.sprite = tempSprite
         self.type = tempType
-        self.isCaught = False # flag for being caught
+        self.isCaught = False 
         
     def update(self):
-        # MINOR BUG: selfDeletion() running causes some fish sprites to flicker ? 
+        # MINOR BUG: selfDeletion() running?? causes some fish sprites to flicker ? 
         self.selfDeletion()
         if not self.isCaught:
             self.pos.x += self.velocity
@@ -233,18 +233,16 @@ class Fish(object):
         else:
             self.pos.y -= 1 # fish moves up with the rod, could be a variable so we can adjust the rod speed
             
-    def collide(self):
-        global fishCaught
-        if self.pos.x <= boatX and (self.pos.x + FISH_SPRITE_SIZE.x) >= boatX:
+    def collide(self): # fish is in range of tip of rod
+        if self.pos.x <= boatX and (self.pos.x + FISH_SPRITE_SIZE.x) >= boatX: 
             if self.pos.y <= (boatY + rodLength) and (self.pos.y + FISH_SPRITE_SIZE.y) >= (rodLength + boatY):
                 self.isCaught = True
-                fishCaught += 1
                 
     def render(self):
         if self.scal > 0: # facing right
             image(self.sprite, self.pos.x, self.pos.y)
-        else:
-             # Credit to https://discourse.processing.org/t/solved-question-about-flipping-images/7391
+        else: # facing left, flip the sprite horizontally
+            # Credit to https://discourse.processing.org/t/solved-question-about-flipping-images/7391
             pushMatrix()
             translate(self.pos.x + FISH_SPRITE_SIZE.x, self.pos.y)
             scale(self.scal, 1)
@@ -252,10 +250,11 @@ class Fish(object):
             popMatrix()
         
     def selfDeletion(self):
+        global fishCaught
         if self.pos.x > width + 300 and self in fishList:
             fishList.remove(self)
         elif self.pos.x < -300 and self in fishList:
             fishList.remove(self)
-        if (self.pos.y + FISH_SPRITE_SIZE.y / 2) <= boatY and self.isCaught and self in fishList:
-             # TODO: INCREASE FISH CAUGHT COUNTER  !
+        if (self.pos.y + FISH_SPRITE_SIZE.y / 2) <= boatY and self.isCaught and self in fishList: # fish reached the boat
+            fishCaught += 1
             fishList.remove(self)
