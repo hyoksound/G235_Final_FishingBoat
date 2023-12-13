@@ -251,9 +251,9 @@ class Fish(object):
         
     def selfDeletion(self):
         global fishCaught
-        if self.pos.x > width + 300 and self in fishList:
+        if self.pos.x > width + 300 and self in fishList: # fish out of bounds to the right
             fishList.remove(self)
-        elif self.pos.x < -300 and self in fishList:
+        elif self.pos.x < -300 and self in fishList: # fish out of bounds to the left
             fishList.remove(self)
         if (self.pos.y + FISH_SPRITE_SIZE.y / 2) <= boatY and self.isCaught and self in fishList: # fish reached the boat
             fishCaught += 1
