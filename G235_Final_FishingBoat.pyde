@@ -1,3 +1,9 @@
+# ------------- FISHING GAME--------------------------------
+# Catch as many fish as you can within the time limit.
+# CONTROLS -------------------------------------------------
+# SPACE BAR = lower rod / RELEASE SPACE BAR = raise rod
+#  S KEY    = continue / restart game
+#-----------------------------------------------------------
 # Global variables
 boatX = 0 
 boatY = 0
@@ -7,11 +13,12 @@ boatVelocity = 0
 rodLowering = False  
 rodLength = 0
 maxRodLength = 300
+ROD_SPEED = 1
 seaLevelY = 0
 fishCaught = 0
 gameState = "TITLE"  
 
-# Seconds Counter - Kai
+# Variables Handling Time
 currentFrameTime = 0
 lastFrameTime = 0
 runningTime = 61000  # time left for player, + 1 second for the sake of seeing 120 seconds countdown, in milliseconds 
@@ -23,10 +30,12 @@ fishTime = 0  # timer that keeps track of how many seconds has passed - needed t
 fishList = []
 fishType = 0
 
+# Fish Image Sprites
 tunaSprite = None
 codSprite = None
 mahiMahiSprite = None
 
+# Fish Types
 TUNA = 0
 COD = 1
 MAHI_MAHI = 2
@@ -64,7 +73,6 @@ def drawTitleScreen():
     text("Boat Game", width / 2, height / 2)
     textSize(20)
     text("Press S to Start", width / 2, height / 2 + 50)  
- 
 
 def runGame():
     global boatVelocity, rodLength
@@ -74,9 +82,9 @@ def runGame():
     drawRemainingTime()
 
     if rodLowering:
-        rodLength = min(rodLength + 1, maxRodLength)
+        rodLength = min(rodLength + ROD_SPEED, maxRodLength)
     else:
-        rodLength = max(rodLength - 1, 0)
+        rodLength = max(rodLength - ROD_SPEED, 0)
 
     drawRod()
     if not rodLowering:
@@ -112,7 +120,8 @@ def moveBoat():
     global boatX
     boatX += boatVelocity
     boatX = max(min(boatX, width - boatWidth / 2), boatWidth / 2)
-# Add new fish (Kai) ----------------------------------
+    
+# FISH FUNCTIONS -------------------------------------------------------------------------------------
 def addFish(fishCount):
     global fishList
     for i in range(fishCount):
@@ -140,6 +149,7 @@ def addFish(fishCount):
 
         fishList.append(Fish(tempPos, tempScale, tempVelocity, tempSprite, tempType))
 
+# Starts fish timer, calls addFish when specified amount of time has passed
 def timeToAddFish():
     global fishTime
     fishTime += deltaTime
@@ -147,7 +157,7 @@ def timeToAddFish():
         addFish(int(random(1, 3)))
         fishTime = 0
         
-# Draw Fish - Kai -----------------------------
+# Render the fish
 def drawFish():
     for fish in fishList:
         fish.render()
@@ -188,9 +198,7 @@ def drawRod():
     stroke(150)
     line(boatX, boatY, boatX, boatY + rodLength)
     
-#-----------------------------------------------------------------------------------------------------
 # UI -------------------------------------------------------------------------------------------------
-
 def drawRemainingTime():
     global runningTime, gameState 
     textAlign(RIGHT)
@@ -200,7 +208,6 @@ def drawRemainingTime():
         gameState = "GAMEOVER"
         return
     text("Seconds Remaining: " + nf(runningTime / 1000, 2), width - 15, 40) # Will format this better, but it does work
-    
 
 def drawFishCount():
     textAlign(LEFT)
@@ -231,7 +238,7 @@ class Fish(object):
             self.pos.x += self.velocity
             self.collide()
         else:
-            self.pos.y -= 1 # fish moves up with the rod, could be a variable so we can adjust the rod speed
+            self.pos.y -= ROD_SPEED # fish moves up with the rod once caught
             
     def collide(self): # fish is in range of tip of rod
         if self.pos.x <= boatX and (self.pos.x + FISH_SPRITE_SIZE.x) >= boatX: 
