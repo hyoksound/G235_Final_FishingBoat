@@ -168,17 +168,18 @@ def timeToAddFish():
 # Render the fish
 def drawFish():
     for fish in fishList:
-        fish.render()
         fish.update()
+        fish.render()
+        
 #-----------------------------------------------------------------------------------------------------
 def keyPressed():
-    global boatVelocity, rodLowering, gameState, runningTime, fishCaught, fishList, fishTime
+    global boatVelocity, rodLowering, rodLength, gameState, runningTime, fishCaught, fishList, fishTime
     if gameState == "TITLE" and key == 's':
         gameState = "GAME"
     elif gameState == "GAME":
         if key == ' ':
             rodLowering = True
-        if not rodLowering:
+        if not rodLowering and rodLength <= 10: # can only move when the rod is almost completely retracted
             if keyCode == LEFT:
                 boatVelocity = -boatSpeed
             elif keyCode == RIGHT:
@@ -263,12 +264,15 @@ class Fish(object):
             scale(self.scal, 1)
             image(self.sprite, 0, 0)
             popMatrix()
+        #circle(self.pos.x, self.pos.y, self.sprite.height)
+        if self.scal == 0:
+            print("SCALE IS 0")
         
     def selfDeletion(self):
         global fishCaught
-        if self.pos.x > width + 300 and self in fishList: # fish out of bounds to the right
+        if self.pos.x > width and self.velocity > 0 and self in fishList: # fish out of bounds to the right
             fishList.remove(self)
-        elif self.pos.x < -300 and self in fishList: # fish out of bounds to the left
+        elif self.pos.x < -FISH_SPRITE_SIZE.x and self.velocity < 0 and self in fishList: # fish out of bounds to the left
             fishList.remove(self)
         if (self.pos.y + FISH_SPRITE_SIZE.y / 2) <= boatY and self.isCaught and self in fishList: # fish reached the boat
             fishCaught += 1
