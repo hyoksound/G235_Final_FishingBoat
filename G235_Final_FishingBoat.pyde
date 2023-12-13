@@ -30,9 +30,7 @@ mahiMahiSprite = None
 TUNA = 0
 COD = 1
 MAHI_MAHI = 2
-#STURGEON = 3
 
-#-----------------------------------------------------------------------------------------------------
 def setup():
     global boatX, boatY, seaLevelY, FISH_SPRITE_SIZE, tunaSprite, codSprite, mahiMahiSprite
     size(640, 480)
