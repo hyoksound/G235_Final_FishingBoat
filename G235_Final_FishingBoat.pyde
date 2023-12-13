@@ -10,6 +10,7 @@ boatY = 0
 boatWidth, boatHeight = 60, 30
 boatSpeed = 6
 boatVelocity = 0
+boatSprite = None
 rodLowering = False  
 rodLength = 0
 maxRodLength = 300
@@ -41,7 +42,7 @@ COD = 1
 MAHI_MAHI = 2
 
 def setup():
-    global boatX, boatY, seaLevelY, FISH_SPRITE_SIZE, tunaSprite, codSprite, mahiMahiSprite
+    global boatX, boatY, seaLevelY, FISH_SPRITE_SIZE, tunaSprite, codSprite, mahiMahiSprite, boatSprite
     size(640, 480)
     boatX = width / 2
     seaLevelY = height * 30 / 100  # Adjusting sea level to 70%
@@ -52,6 +53,9 @@ def setup():
     tunaSprite = loadImage("Sprites/Tuna.png")
     codSprite = loadImage("Sprites/Cod.png")
     mahiMahiSprite = loadImage("Sprites/MahiMahi.png")
+    
+    # Handle Boat Sprite
+    boatSprite = loadImage("Sprites/Boat.png")
 
 def draw():
     global deltaTime
@@ -113,8 +117,12 @@ def drawSea():
     rect(0, seaLevelY, width, height - seaLevelY)
 
 def drawBoat():
-    fill(255, 50, 0)
-    rect(boatX - boatWidth / 2, boatY - boatHeight / 2, boatWidth, boatHeight)
+    #fill(255, 50, 0)
+    #rect(boatX - boatWidth / 2, boatY - boatHeight / 2, boatWidth, boatHeight)
+    pushStyle()
+    imageMode(CENTER)
+    image(boatSprite, boatX, boatY - 12) 
+    popStyle()
 
 def moveBoat():
     global boatX
