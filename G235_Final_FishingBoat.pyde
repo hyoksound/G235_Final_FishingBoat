@@ -244,7 +244,7 @@ def drawRemainingTime():
     if runningTime <= 0:
         gameState = "GAMEOVER"
         return
-    text("Seconds Remaining: " + nf(runningTime / 1000, 2), width - 15, 40) # Will format this better, but it does work
+    text("Seconds Remaining: " + nf(runningTime / 1000, 2), width - 15, 30) # Will format this better, but it does work
 
 def drawFishCount():
     textAlign(LEFT)
