@@ -1,8 +1,9 @@
 # ------------- FISHING GAME--------------------------------
 # Catch as many fish as you can within the time limit.
 # CONTROLS -------------------------------------------------
-# SPACE BAR = lower rod / RELEASE SPACE BAR = raise rod
-#  S KEY    = continue / restart game
+#          SPACE BAR        = lower rod / RELEASE SPACE BAR = raise rod
+#           S KEY           = continue / restart game
+# LEFT AND RIGHT ARROW KEYS = Move the boat 
 #-----------------------------------------------------------
 # Global variables
 boatX = 0 
@@ -69,14 +70,36 @@ def draw():
 
     # Delta Time
     deltaTime = getLastFrameTime()
+    
+    drawGameOverScreen()
 
 def drawTitleScreen():
     background(300)
     textSize(32)
     textAlign(CENTER, CENTER)
-    text("Boat Game", width / 2, height / 2)
+    text("Boat Game", width / 2, height / 2 - 16)
     textSize(20)
     text("Press S to Start", width / 2, height / 2 + 50)  
+    
+    # Drawing Fish + Boat for title screen
+    pushStyle()
+    imageMode(CENTER)
+    image(boatSprite, width / 2, height * 4 / 5)
+    image(tunaSprite, width / 2, height * 1 / 4)
+    pushMatrix()
+    translate(width * 3 / 4, height / 2)
+    rotate(-PI/6)
+    image(mahiMahiSprite, 0, 0)
+    popMatrix()
+    
+    pushMatrix()
+    translate(width * 1 / 4, height / 2)
+    rotate(PI/5)
+    image(codSprite, 0, 0)
+    popMatrix()
+    
+    popStyle()
+    
 
 def runGame():
     global boatVelocity, rodLength
@@ -107,14 +130,21 @@ def drawGameOverScreen():
     fill(255, 0, 0)
     textSize(32)
     textAlign(CENTER, CENTER)
-    text("Game Over", width / 2, height / 2)
+    text("Game Over", width / 2, height / 2 - 16)
     text("You caught " + str(fishCaught) + " fish", width / 2, height / 2 + 40)
     textSize(20)
     text("Press S to Restart", width / 2, height / 2 + 80) 
+    pushStyle()
+    imageMode(CENTER)
+    image(tunaSprite, width / 2, height - FISH_SPRITE_SIZE.y * 4 / 3)
+    popStyle()
 
 def drawSea():
+    pushStyle()
+    noStroke()
     fill(0, 100, 150)
     rect(0, seaLevelY, width, height - seaLevelY)
+    popStyle()
 
 def drawBoat():
     #fill(255, 50, 0)
@@ -144,7 +174,7 @@ def addFish(fishCount):
             tempVelocity = random(2, 7) * -1
             tempPosX = width
         
-        tempPos = PVector(tempPosX, random(height * 3 / 10, height - FISH_SPRITE_SIZE.y))
+        tempPos = PVector(tempPosX, random(seaLevelY, height - FISH_SPRITE_SIZE.y))
        
         # Determine what type of fish -------- 
         tempType = int(random(0, 3))
