@@ -71,8 +71,6 @@ def draw():
     # Delta Time
     deltaTime = getLastFrameTime()
     
-    drawGameOverScreen()
-
 def drawTitleScreen():
     background(300)
     textSize(32)
